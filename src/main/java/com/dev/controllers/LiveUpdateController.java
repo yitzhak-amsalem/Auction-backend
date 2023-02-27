@@ -23,26 +23,6 @@ public class LiveUpdateController {
     @Autowired
     private Persist persist;
 
-/*    @PostConstruct
-    public void init(){
-        new Thread(() ->{
-//            while (true) {
-//                for (SseEmitter sseEmitter: emitterList){
-//                    try {
-//                        sseEmitter.send(new Date().toString());
-//                    } catch (Exception e){
-//                        e.printStackTrace();
-//                    }
-//                }
-//                try {
-//                    Thread.sleep(SECOND);
-//                } catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-        }).start();
-    }*/
-
     @RequestMapping(value = "/sse-handler", method = RequestMethod.GET)
     public SseEmitter handle(String token, int recipientID){
         User user = persist.getUserByToken(token);

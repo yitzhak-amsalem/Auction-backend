@@ -1,7 +1,9 @@
 package com.dev.objects;
 
-import javax.persistence.*;
+import lombok.Data;
 
+import javax.persistence.*;
+@Data
 @Entity
 @Table (name = "my_users")
 public class User {
@@ -21,30 +23,6 @@ public class User {
 
     public User(String username, String token) {
         this.username = username;
-        this.token = token;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
         this.token = token;
     }
 }
