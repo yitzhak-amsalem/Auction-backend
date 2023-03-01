@@ -1,3 +1,4 @@
+/*
 package com.dev.controllers;
 
 import com.dev.models.EventModel;
@@ -47,9 +48,11 @@ public class LiveUpdateController {
 
     public void sendStartTypingEvent(int senderId, int recipientId) {
         String key = createKey(recipientId, senderId);
+*/
 /*        System.out.println(this.senderKey);
         System.out.println(this.recipientKey);
-        System.out.println(this.senderKey.equals(this.recipientKey));*/
+        System.out.println(this.senderKey.equals(this.recipientKey));*//*
+
         SseEmitter conversationEmitter = this.emitterMap.get(key);
         System.out.println(conversationEmitter);
         if (conversationEmitter != null) {
@@ -78,3 +81,4 @@ public class LiveUpdateController {
     }
 
 }
+*/

@@ -1,6 +1,7 @@
 package com.dev.objects;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,12 +15,16 @@ public class Offer {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column
         private int id;
-        @ManyToOne
-        @Column
-        private User offers;
         @Column
         private Integer amount;
         @Column
         private Date date;
+        @ManyToOne
+        @JoinColumn
+        private User offers;
+        @ToString.Exclude
+        @ManyToOne
+        @JoinColumn
+        private Auction auction;
 
 }

@@ -21,6 +21,6 @@ public class Product {
     @Column
     private Integer price;
     @ManyToOne
-    @Column
+    @JoinColumn
     private User owner;
 }

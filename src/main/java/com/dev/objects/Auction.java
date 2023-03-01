@@ -17,14 +17,15 @@ public class Auction {
     private int id;
     @Column
     private Boolean isOpen;
-    @ManyToOne
     @Column
-    private User publisher; // ? - product.getOwner();
-    @OneToMany
-    @Column
-    private List<Offer> offers;
     private Date openingDate;
     @ManyToOne
-    @Column
+    @JoinColumn
     private Product product;
+    @ManyToOne
+    @JoinColumn
+    private User publisher; // ? - product.getOwner();
+    @OneToMany
+    @JoinColumn
+    private List<Offer> offers;
 }
