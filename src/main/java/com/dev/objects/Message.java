@@ -12,9 +12,6 @@ public class Message implements Comparable<Message> {
     @Column
     private int id;
 
-/*    @Column(name = "title")
-    private String title;*/
-
     @Column(name = "send_date")
     private Date sendDate;
 

@@ -1,13 +1,26 @@
 package com.dev.objects;
 
-import lombok.Data;
+import lombok.*;
+
+import javax.persistence.*;
 
 @Data
+@Entity
+@Table (name = "products")
 public class Product {
-    private final String name;
-    private final String description;
-    private final String imageLink;
-    private final Integer price;
-
-    private final User owner;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private int id;
+    @Column
+    private String name;
+    @Column
+    private String description;
+    @Column
+    private String imageLink;
+    @Column
+    private Integer price;
+    @ManyToOne
+    @Column
+    private User owner;
 }

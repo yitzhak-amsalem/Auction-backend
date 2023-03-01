@@ -6,11 +6,10 @@ import com.dev.objects.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import java.util.Collections;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
-@Component
+@Service
 public class Persist {
 
     private final SessionFactory sessionFactory;
@@ -30,14 +29,9 @@ public class Persist {
         return found;
     }
 
-    public void saveUser (User user) {
+    public void saveUser (User user) { // save X
         Session session = sessionFactory.openSession();
         session.save(user);
-        session.close();
-    }
-    public void saveMessage (Message message) {
-        Session session = sessionFactory.openSession();
-        session.save(message);
         session.close();
     }
 
@@ -78,26 +72,11 @@ public class Persist {
         return user;
     }
 
-    public List<Message> getMessagesByToken (String token) {
+    public List<Message> getMessagesByToken (String token) { // get X by token
         Session session = sessionFactory.openSession();
         List<Message> messages = session.createQuery("FROM Message WHERE recipient.token = :token ")
                 .setParameter("token", token)
                 .list();
-        session.close();
-        return messages;
-    }
-    public List<Message> getConversation (String token, int recipientID) {
-        Session session = sessionFactory.openSession();
-        List<Message> messages = session.createQuery(
-                "FROM Message WHERE " +
-                        "(sender.token = :token AND recipient.id = :id)" +
-                        " OR (sender.id = :id2 AND recipient.token =:token2) ORDER BY id")
-                .setParameter("token", token)
-                .setParameter("token2", token)
-                .setParameter("id", recipientID)
-                .setParameter("id2", recipientID)
-                .list();
-        Collections.sort(messages);
         session.close();
         return messages;
     }

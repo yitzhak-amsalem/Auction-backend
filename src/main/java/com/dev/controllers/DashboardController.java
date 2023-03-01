@@ -38,7 +38,7 @@ public class DashboardController {
         return basicResponse;
     }
 
-    @RequestMapping(value = "get-latest-messages", method = RequestMethod.GET)
+    @RequestMapping(value = "get-latest-messages", method = RequestMethod.GET)  // get X
     public BasicResponse getLatestMessages (String token) {
         List<Message> userMessages = persist.getMessagesByToken(token);
         User user = persist.getUserByToken(token);
@@ -59,19 +59,12 @@ public class DashboardController {
         }
         return basicResponse;
     }
-    @RequestMapping(value = "get-conversation", method = RequestMethod.GET)
-    public BasicResponse getConversation (String token, int recipientID) {
-        BasicResponse basicResponse = null;
-        User user = persist.getUserByToken(token);
-        if (user != null){
-            List<Message> userMessages = persist.getConversation(token,recipientID);
-            basicResponse = new MessagesResponse(userMessages, user.getId());
-        } else {
-            basicResponse = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
-        }
-        return basicResponse;
 
-    }
+
+
+
+
+    // SSEvents
     @RequestMapping(value = "send-message", method = RequestMethod.POST)
     public BasicResponse sendMessage (String token, int recipientID, String content) {
         BasicResponse basicResponse = null;
@@ -80,7 +73,6 @@ public class DashboardController {
             User recipient = persist.getUserByID(recipientID);
             if (recipient != null){
                 Message message = new Message(user, recipient, content);
-                persist.saveMessage(message);
                 liveUpdatesController.sendConversationMessage(user.getId(), recipientID, message);
                 basicResponse = new BasicResponse(true, null);
             } else {
