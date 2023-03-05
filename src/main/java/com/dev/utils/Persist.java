@@ -1,8 +1,14 @@
 
 package com.dev.utils;
 
+
+import com.dev.objects.Message;
+import com.dev.objects.Product;
+import com.dev.objects.User;
+
 import com.dev.models.MyOfferModel;
 import com.dev.objects.*;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -170,6 +176,14 @@ public class Persist {
             exist = true;
         }
         return exist;
+    }
+
+
+    public List<Product> getMyProductsFromTable (String token) {
+        Session session = sessionFactory.openSession();
+        List<Product> myProducts = session.createQuery("FROM Auction WHERE User.token = :token").list();
+        session.close();
+        return myProducts;
     }
 
     public List<Offer> getOffersByAuctionID(int auctionID){
