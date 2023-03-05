@@ -2,7 +2,7 @@ package com.dev.responses;
 
 public class BasicResponse {
     private boolean success;
-    private Integer errorCode;
+    Integer errorCode;
 
     public BasicResponse(boolean success, Integer errorCode) {
         this.success = success;

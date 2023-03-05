@@ -2,6 +2,7 @@
 package com.dev.utils;
 
 import com.dev.objects.Message;
+import com.dev.objects.Product;
 import com.dev.objects.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -81,6 +82,13 @@ public class Persist {
                 .list();
         session.close();
         return messages;
+    }
+
+    public List<Product> getMyProductsFromTable (String token) {
+        Session session = sessionFactory.openSession();
+        List<Product> myProducts = session.createQuery("FROM Auction WHERE User .token = :token").list();
+        session.close();
+        return myProducts;
     }
 
 }
