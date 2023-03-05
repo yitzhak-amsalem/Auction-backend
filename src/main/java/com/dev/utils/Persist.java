@@ -2,7 +2,7 @@
 package com.dev.utils;
 
 
-import com.dev.objects.Message;
+import com.dev.models.MyProductsModel;
 import com.dev.objects.Product;
 import com.dev.objects.User;
 
@@ -39,7 +39,7 @@ public class Persist {
         addUser("c", "123456");
     }
     public void setAuctions() {
-        Product p1 = new Product(
+/*        Product p1 = new Product(
                 "table",
                 "work table",
                 "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/XOZ56_Z_P_7290015745376_1.png",
@@ -71,12 +71,15 @@ public class Persist {
         saveOffer(o1);saveOffer(o2);saveOffer(o3);saveOffer(o4);saveOffer(o5);
 
         System.out.println(getOffersByAuctionID(1));
-        System.out.println("-----");
+        System.out.println("-----");*/
+/*        a.setIsOpen(false);
+        updateAuction(a);*/
+/*        Offer o6 = new Offer(122, getUserByID(3), getAuctionByProductID(1));
+        saveOffer(o6);*/
         Auction a = getAuctionByProductID(1);
-        a.setIsOpen(false);
-        updateAuction(a);
         System.out.println(getMyOffers("5D96A0ED166A05B49DA80A031752FE80"));
-        System.out.println(getAuctionByProductID(1).getWinnerOffer(this));
+        System.out.println(a.getWinnerOffer(getOffersByAuctionID(1)));
+
 
     }
 
@@ -178,10 +181,16 @@ public class Persist {
         return exist;
     }
 
-
-    public List<Product> getMyProductsFromTable (String token) {
+    public List<MyProductsModel> getMyProducts(String token) {
         Session session = sessionFactory.openSession();
-        List<Product> myProducts = session.createQuery("FROM Auction WHERE User.token = :token").list();
+        List<Auction> myAuctions = session.createQuery("FROM Auction WHERE productObj.owner.token = :token")
+                .setParameter("token", token).list();
+        List<MyProductsModel> myProducts = new ArrayList<>();
+        myAuctions.stream().forEach(auction -> {
+            List<Offer> auctionOffers = getOffersByAuctionID(auction.getId());
+            myProducts.add(new MyProductsModel(auction, auctionOffers));
+        });
+
         session.close();
         return myProducts;
     }
@@ -204,12 +213,14 @@ public class Persist {
 
     public List<MyOfferModel> getMyOffers(String token) {
         Session session = sessionFactory.openSession();
-        List<Auction> auctions = session.createQuery("FROM Auction").list();
+        List<Offer> myOffers = session.createQuery("FROM Offer where offers.token = :token")
+                .setParameter("token", token).list();
         session.close();
-        List<MyOfferModel> myOffers = new ArrayList<>();
-        auctions.stream()
-                .flatMap(auction -> getOffersByAuctionID(auction.getId()).stream().filter(offer -> offer.getOffers().getToken().equals(token)))
-                .forEach(userOffer -> myOffers.add(new MyOfferModel(userOffer, this)));
-        return myOffers;
+        List<MyOfferModel> myOffersModel = new ArrayList<>();
+        myOffers.stream().forEach(offer -> {
+            List<Offer> auctionOffers = getOffersByAuctionID(offer.getAuction().getId());
+            myOffersModel.add(new MyOfferModel(offer, auctionOffers));
+        });
+        return myOffersModel;
     }
 }

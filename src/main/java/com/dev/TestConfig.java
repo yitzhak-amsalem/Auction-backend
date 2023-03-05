@@ -1,5 +1,6 @@
 package com.dev;
 
+import com.dev.models.MyOfferModel;
 import com.dev.objects.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -51,6 +52,7 @@ public class TestConfig {
         configuration.addAnnotatedClass(Product.class);
         configuration.addAnnotatedClass(Offer.class);
         configuration.addAnnotatedClass(Message.class);
+        configuration.addAnnotatedClass(MyOfferModel.class);
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
         return configuration.buildSessionFactory(serviceRegistry);

@@ -35,7 +35,6 @@ public class ProductController {
             response = new BasicResponse(false, ERROR_NO_SUCH_PRODUCT);
         }
         return response;
-
     }
     @RequestMapping(value = "/make-an-offer", method = {RequestMethod.POST})
     public BasicResponse makeOffer(String token, int amount, Auction auction) {
