@@ -1,9 +1,11 @@
 package com.dev.objects;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-@Data
+@Getter
+@Setter
 @Entity
 @Table (name = "users")
 public class User {
@@ -19,6 +21,7 @@ public class User {
     private Double credit;
 
     public User() {
+        this.credit = 1000d;
     }
 
     public User(String username, String token) {

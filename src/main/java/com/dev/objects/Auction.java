@@ -1,13 +1,15 @@
 package com.dev.objects;
 
+import com.dev.utils.Persist;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table (name = "auctions")
 public class Auction {
@@ -21,11 +23,30 @@ public class Auction {
     private Date openingDate;
     @ManyToOne
     @JoinColumn
-    private Product product;
-    @ManyToOne
-    @JoinColumn
-    private User publisher; // ? - product.getOwner();
-    @OneToMany
-    @JoinColumn
-    private List<Offer> offers;
+    private Product productObj;
+
+    public Auction(Product product) {
+        this.isOpen = true;
+        this.openingDate = new Date();
+        this.productObj = product;
+    }
+
+    public Auction() {
+
+    }
+    public Offer getWinnerOffer(Persist persist) {
+        return persist.getOffersByAuctionID(this.id).stream()
+                .max(Offer::compareTo).get();
+    }
+
+/*    public Offer getWinnerOffer(Persist persist) {
+        return this.isOpen ?
+                null
+                :
+                persist.getOffersByAuctionID(this.id).size() < 3 ?
+                    null
+                    :
+                    persist.getOffersByAuctionID(this.id).stream()
+                    .max(Offer::compareTo).get();
+    }*/
 }
