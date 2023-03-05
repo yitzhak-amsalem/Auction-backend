@@ -3,8 +3,8 @@ package com.dev.objects;
 import lombok.*;
 
 import javax.persistence.*;
-
-@Data
+@Getter
+@Setter
 @Entity
 @Table (name = "products")
 public class Product {
@@ -23,4 +23,16 @@ public class Product {
     @ManyToOne
     @JoinColumn
     private User owner;
+
+    public Product(String name, String description, String imageLink, Integer price, User owner) {
+        this.name = name;
+        this.description = description;
+        this.imageLink = imageLink;
+        this.price = price;
+        this.owner = owner;
+    }
+
+    public Product() {
+
+    }
 }
