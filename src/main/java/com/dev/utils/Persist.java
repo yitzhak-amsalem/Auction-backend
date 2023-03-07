@@ -223,4 +223,24 @@ public class Persist {
         });
         return myOffersModel;
     }
+
+    public void makeNewOffer(String token, int amount, Auction auction, Double credit) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        Offer newOffer = new Offer(amount, getUserByToken(token), auction);
+        saveOffer(newOffer);
+        updateUserCredit(token, credit);
+        transaction.commit();
+        session.close();
+    }
+
+    public void updateUserCredit(String token, Double credit) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        User user = getUserByToken(token);
+        user.setCredit(credit);
+        session.saveOrUpdate(user);
+        transaction.commit();
+        session.close();
+    }
 }
