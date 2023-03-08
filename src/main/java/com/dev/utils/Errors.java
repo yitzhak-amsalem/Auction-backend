@@ -11,5 +11,7 @@ public class Errors {
     public static final int ERROR_LESS_OFFER = 1007;
     public static final int ERROR_NO_CREDIT = 1008;
     public static final int ERROR_AUCTION_CLOSED = 1009;
+    public static final int ERROR_NO_ADMIN = 1010;
+
 
 }
