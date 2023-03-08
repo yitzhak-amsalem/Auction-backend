@@ -23,6 +23,8 @@ public class User {
     private String token;
     @Column
     private Double credit;
+    @Column
+    private boolean isAdmin;
 
     public User() {
         this.credit = 1000d;

@@ -13,11 +13,8 @@ import static com.dev.utils.Errors.*;
 
 @RestController
 public class LoginController {
-
-
     @Autowired
     private Utils utils;
-
     @Autowired
     private Persist persist;
 
@@ -61,6 +58,31 @@ public class LoginController {
                 String token = utils.createHash(username, password);
                 User fromDb = persist.getUserByUsernameAndToken(username, token);
                 if (fromDb != null) {
+                    success = true;
+                    basicResponse = new LoginResponse(token);
+                } else {
+                    errorCode = ERROR_WRONG_LOGIN_CREDS;
+                }
+            } else {
+                errorCode = ERROR_MISSING_PASSWORD;
+            }
+        } else {
+            errorCode = ERROR_MISSING_USERNAME;
+        }
+        basicResponse.setSuccess(success);
+        basicResponse.setErrorCode(errorCode);
+        return basicResponse;
+    }
+    @RequestMapping (value = "login-as-admin")
+    public BasicResponse loginAsAdmin (String username, String password) {
+        BasicResponse basicResponse = new BasicResponse();
+        boolean success = false;
+        Integer errorCode = null;
+        if (username != null) {
+            if (password != null) {
+                String token = utils.createHash(username, password);
+                User admin = persist.getUserByUsernameAndToken(username, token);
+                if (admin != null && admin.isAdmin()) {
                     success = true;
                     basicResponse = new LoginResponse(token);
                 } else {

@@ -1,26 +1,18 @@
 package com.dev.responses;
 
+import com.dev.models.UserForAdminModel;
 import com.dev.objects.User;
+import lombok.Data;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Data
 public class AllUsersResponse extends BasicResponse {
-    private List<User> users;
+    private List<UserForAdminModel> users;
 
-    public AllUsersResponse(List<User> users) {
-        this.users = users;
-    }
-
-    public AllUsersResponse(boolean success, Integer errorCode, List<User> users) {
+    public AllUsersResponse(boolean success, Integer errorCode, List<UserForAdminModel> users) {
         super(success, errorCode);
-        this.users = users;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
         this.users = users;
     }
 }

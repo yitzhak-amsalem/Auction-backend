@@ -3,6 +3,7 @@ package com.dev.utils;
 
 
 import com.dev.models.MyProductsModel;
+import com.dev.models.UserForAdminModel;
 import com.dev.objects.Product;
 import com.dev.objects.User;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class Persist {
@@ -134,11 +136,29 @@ public class Persist {
         return found;
     }
 
-    public List<User> getAllUsers () {
+    public List<UserForAdminModel> getAllUsers () {
         Session session = sessionFactory.openSession();
-        List<User> allUsers = session.createQuery("FROM User ").list();
+        List<User> allUsers = session.createQuery("FROM User WHERE isAdmin = :isAdmin")
+                .setParameter("isAdmin", false).list();
         session.close();
-        return allUsers;
+        return allUsers.stream()
+                .map(user -> UserForAdminModel.builder()
+                        .credit(user.getCredit())
+                        .username(user.getUsername())
+                        .token(user.getToken())
+                        .sumOffers(getSumOffers(user.getToken()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public Integer getSumOffers(String token) {
+        Session session = sessionFactory.openSession();
+        Integer sumOffers = session.createQuery("From Offer WHERE offers.token = :token")
+                .setParameter("token", token)
+                .list().size();
+        System.out.println(sumOffers);
+        session.close();
+        return sumOffers;
     }
 
     public User getUserByToken (String token) {
@@ -185,14 +205,26 @@ public class Persist {
         Session session = sessionFactory.openSession();
         List<Auction> myAuctions = session.createQuery("FROM Auction WHERE productObj.owner.token = :token")
                 .setParameter("token", token).list();
+        session.close();
         List<MyProductsModel> myProducts = new ArrayList<>();
         myAuctions.stream().forEach(auction -> {
             List<Offer> auctionOffers = getOffersByAuctionID(auction.getId());
             myProducts.add(new MyProductsModel(auction, auctionOffers));
         });
-
-        session.close();
         return myProducts;
+    }
+
+    public List<MyOfferModel> getMyOffers(String token) {
+        Session session = sessionFactory.openSession();
+        List<Offer> myOffers = session.createQuery("FROM Offer where offers.token = :token")
+                .setParameter("token", token).list();
+        session.close();
+        List<MyOfferModel> myOffersModel = new ArrayList<>();
+        myOffers.forEach(offer -> {
+            List<Offer> auctionOffers = getOffersByAuctionID(offer.getAuction().getId());
+            myOffersModel.add(new MyOfferModel(offer, auctionOffers));
+        });
+        return myOffersModel;
     }
 
     public List<Offer> getOffersByAuctionID(int auctionID){
@@ -209,19 +241,6 @@ public class Persist {
                 .setParameter("productID", productID).uniqueResult();
         session.close();
         return auction;
-    }
-
-    public List<MyOfferModel> getMyOffers(String token) {
-        Session session = sessionFactory.openSession();
-        List<Offer> myOffers = session.createQuery("FROM Offer where offers.token = :token")
-                .setParameter("token", token).list();
-        session.close();
-        List<MyOfferModel> myOffersModel = new ArrayList<>();
-        myOffers.stream().forEach(offer -> {
-            List<Offer> auctionOffers = getOffersByAuctionID(offer.getAuction().getId());
-            myOffersModel.add(new MyOfferModel(offer, auctionOffers));
-        });
-        return myOffersModel;
     }
 
     public void makeNewOffer(String token, int amount, Auction auction, Double credit) {
