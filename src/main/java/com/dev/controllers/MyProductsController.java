@@ -1,9 +1,7 @@
 package com.dev.controllers;
 
-import com.dev.objects.Product;
-import com.dev.responses.AllUsersResponse;
-import com.dev.responses.BasicResponse;
-import com.dev.responses.MyProductsResponse;
+import com.dev.models.MyOfferModel;
+import com.dev.models.ProductModel;
 import com.dev.utils.Persist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +15,7 @@ public class MyProductsController {
     private Persist persist;
 
     @RequestMapping(value = "get-my-products", method = RequestMethod.GET)
-    public BasicResponse getAllUsers (String token) {
-        List<Product> myProducts = persist.getMyProductsFromTable(token);
-        MyProductsResponse myProductsResponse = new MyProductsResponse(true, null, myProducts);
-        return myProductsResponse;
+    public List<ProductModel> getMyProducts(String token) {
+        return persist.getMyProductsFromTable(token);
     }
 }

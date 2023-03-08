@@ -13,8 +13,8 @@ public class MyOfferModel {
     private Boolean isWin;
 
     public MyOfferModel(Offer offer, Persist persist){
-        this.productID = offer.getAuction().getProductObj().getId();
-        this.productName = offer.getAuction().getProductObj().getName();
+        this.productID = offer.getAuction().getProductsObj().getId();
+        this.productName = offer.getAuction().getProductsObj().getName();
         this.amountOffer = offer.getAmount();
         this.isOpen = offer.getAuction().getIsOpen();
         this.isWin = checkWinOffer(offer, persist);

@@ -1,6 +1,6 @@
 package com.dev.models;
 
-import com.dev.objects.Product;
+import com.dev.objects.Products;
 import lombok.Data;
 
 @Data
@@ -8,9 +8,9 @@ public class ProductModel {
     private String name;
     private String imageLink;
     private UserModel owner;
-    public ProductModel(Product product){
-        this.name = product.getName();
-        this.imageLink = product.getImageLink();
-        this.owner = new UserModel(product.getOwner());
+    public ProductModel(Products products){
+        this.name = products.getName();
+        this.imageLink = products.getImageLink();
+        this.owner = new UserModel(products.getOwner());
     }
 }

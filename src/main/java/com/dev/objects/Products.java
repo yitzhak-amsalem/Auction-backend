@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table (name = "products")
-public class Product {
+public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -24,7 +24,7 @@ public class Product {
     @JoinColumn
     private User owner;
 
-    public Product(String name, String description, String imageLink, Integer price, User owner) {
+    public Products(String name, String description, String imageLink, Integer price, User owner) {
         this.name = name;
         this.description = description;
         this.imageLink = imageLink;
@@ -32,7 +32,7 @@ public class Product {
         this.owner = owner;
     }
 
-    public Product() {
+    public Products() {
 
     }
 }

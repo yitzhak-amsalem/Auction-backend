@@ -48,7 +48,7 @@ public class TestConfig {
         }
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(Auction.class);
-        configuration.addAnnotatedClass(Product.class);
+        configuration.addAnnotatedClass(Products.class);
         configuration.addAnnotatedClass(Offer.class);
         configuration.addAnnotatedClass(Message.class);
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()

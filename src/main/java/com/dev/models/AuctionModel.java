@@ -20,7 +20,7 @@ public class AuctionModel {
         this.isOpen = auction.getIsOpen();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         this.openingDate = simpleDateFormat.format(auction.getOpeningDate());
-        this.productObj = new ProductModel(auction.getProductObj());
+        this.productObj = new ProductModel(auction.getProductsObj());
         this.myOffers = offers.stream().filter(offer -> offer.getOffers().getToken().equals(token))
                 .map(offer -> new OfferModel(offer))
                 .collect(Collectors.toList());

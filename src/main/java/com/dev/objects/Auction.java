@@ -1,7 +1,6 @@
 package com.dev.objects;
 
 import com.dev.utils.Persist;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,12 +22,12 @@ public class Auction {
     private Date openingDate;
     @ManyToOne
     @JoinColumn
-    private Product productObj;
+    private Products productsObj;
 
-    public Auction(Product product) {
+    public Auction(Products products) {
         this.isOpen = true;
         this.openingDate = new Date();
-        this.productObj = product;
+        this.productsObj = products;
     }
 
     public Auction() {

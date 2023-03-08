@@ -2,8 +2,8 @@
 package com.dev.utils;
 
 
-import com.dev.objects.Message;
-import com.dev.objects.Product;
+import com.dev.models.ProductModel;
+import com.dev.objects.Products;
 import com.dev.objects.User;
 
 import com.dev.models.MyOfferModel;
@@ -39,14 +39,14 @@ public class Persist {
         addUser("c", "123456");
     }
     public void setAuctions() {
-        Product p1 = new Product(
+        Products p1 = new Products(
                 "table",
                 "work table",
                 "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/XOZ56_Z_P_7290015745376_1.png",
                 100,
                 getUserByID(2)
         );
-        Product p2 = new Product(
+        Products p2 = new Products(
                 "table",
                 "work table",
                 "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/XOZ56_Z_P_7290015745376_1.png",
@@ -95,14 +95,14 @@ public class Persist {
         session.save(user);
         session.close();
     }
-    public void saveProduct (Product product) {
+    public void saveProduct (Products products) {
         Session session = sessionFactory.openSession();
-        session.save(product);
+        session.save(products);
         session.close();
     }
     public void saveAuction (Auction auction) {
         Session session = sessionFactory.openSession();
-        saveProduct(auction.getProductObj());
+        saveProduct(auction.getProductsObj());
         session.save(auction);
         session.close();
     }
@@ -179,9 +179,9 @@ public class Persist {
     }
 
 
-    public List<Product> getMyProductsFromTable (String token) {
+    public List<ProductModel> getMyProductsFromTable (String token) {
         Session session = sessionFactory.openSession();
-        List<Product> myProducts = session.createQuery("FROM Auction WHERE User.token = :token").list();
+        List<ProductModel> myProducts = session.createQuery("FROM Products WHERE User.token = :token").setParameter("token",token).list();
         session.close();
         return myProducts;
     }
