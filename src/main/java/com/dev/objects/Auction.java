@@ -1,15 +1,15 @@
 package com.dev.objects;
 
 import com.dev.utils.Persist;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Getter
 @Setter
+@ToString
+@EqualsAndHashCode
 @Entity
 @Table (name = "auctions")
 public class Auction {
@@ -34,9 +34,8 @@ public class Auction {
     public Auction() {
 
     }
-    public Offer getWinnerOffer(Persist persist) {
-        return persist.getOffersByAuctionID(this.id).stream()
-                .max(Offer::compareTo).get();
+    public Offer getWinnerOffer(List<Offer> offers) {
+        return offers.stream().max(Offer::compareTo).get();
     }
 
 /*    public Offer getWinnerOffer(Persist persist) {

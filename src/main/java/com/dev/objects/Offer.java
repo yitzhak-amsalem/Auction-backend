@@ -1,15 +1,14 @@
 package com.dev.objects;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "offers")
 public class Offer implements Comparable<Offer>{
@@ -43,7 +42,7 @@ public class Offer implements Comparable<Offer>{
         @Override
         public int compareTo(Offer o) {
                 return ((o.getAmount()) - (this.getAmount()) != 0) ?
-                        (this.getAmount()) - (o.getAmount())
+                        (this.getAmount()).compareTo(o.getAmount()) //todo
                         :
                         o.getDate().compareTo(this.getDate());
         }

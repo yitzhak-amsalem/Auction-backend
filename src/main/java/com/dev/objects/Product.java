@@ -5,6 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table (name = "products")
 public class Product {
