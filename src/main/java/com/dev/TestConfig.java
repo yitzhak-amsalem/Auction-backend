@@ -56,7 +56,6 @@ public class TestConfig {
         return configuration.buildSessionFactory(serviceRegistry);
     }
 
-
     @Bean
     public HibernateTransactionManager transactionManager() throws Exception{
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();

@@ -26,13 +26,14 @@ public class User {
     @Column
     private boolean isAdmin;
 
-    public User() {
-        this.credit = 1000d;
-    }
-
-    public User(String username, String token) {
+    public User(String username, String token, boolean isAdmin) {
         this.username = username;
         this.token = token;
-        this.credit = 1000d;
+        this.credit = isAdmin ? 0d : 1000d;
+        this.isAdmin = isAdmin;
+    }
+
+    public User() {
+
     }
 }

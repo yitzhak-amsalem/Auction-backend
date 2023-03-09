@@ -7,6 +7,7 @@ import com.dev.responses.LoginResponse;
 import com.dev.responses.StatisticsResponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,8 +31,7 @@ public class LoginController {
                 if (utils.isStrongPassword(password)) {
                     User fromDb = persist.getUserByUsername(username);
                     if (fromDb == null) {
-                        User toAdd = new User(username, utils.createHash(username, password));
-                        persist.saveUser(toAdd);
+                        persist.addUser(username, utils.createHash(username, password), false);
                         success = true;
                     } else {
                         errorCode = ERROR_USERNAME_ALREADY_EXISTS;
@@ -58,8 +58,8 @@ public class LoginController {
         if (username != null) {
             if (password != null) {
                 String token = utils.createHash(username, password);
-                User fromDb = persist.getUserByUsernameAndToken(username, token);
-                if (fromDb != null) {
+                User user = persist.getUserByUsernameAndToken(username, token);
+                if (user != null && !user.isAdmin()) {
                     success = true;
                     basicResponse = new LoginResponse(token);
                 } else {
@@ -101,17 +101,13 @@ public class LoginController {
         return basicResponse;
     }
     @RequestMapping (value = "get-statistics")
-    public StatisticsResponse getStatistics () {
-        StatisticsModel statisticsModel =new StatisticsModel();
-        StatisticsResponse statisticsResponse =new StatisticsResponse();
-        statisticsModel.setNumOfUsers(persist.getNumberOfUsers());
-        statisticsModel.setNumOfOffers(persist.getNumberOfOffers());
-        statisticsModel.setNumOfAuction(persist.getNumberOfAuctions());
-        statisticsResponse.setStatisticsModel(statisticsModel);
-        statisticsResponse.setSuccess(true);
-        statisticsResponse.setErrorCode(0);
-
-        return statisticsResponse;
+    public BasicResponse getStatistics () { //todo errors?
+        StatisticsModel statisticsModel = StatisticsModel.builder()
+                .numOfAuction(persist.getNumberOfAuctions())
+                .numOfOffers(persist.getNumberOfOffers())
+                .numOfUsers(persist.getNumberOfUsers())
+                .build();
+        return new StatisticsResponse(true, null, statisticsModel);
     }
 
 }

@@ -35,13 +35,13 @@ public class Persist {
         //setAuctions();
     }
     public void setAdmin() {
-        addUser("admin", "123456");
-        addUser("a", "123456");
-        addUser("b", "123456");
-        addUser("c", "123456");
+        addUser("admin", "123456", true);
+        addUser("a", "123456", false);
+        addUser("b", "123456", false);
+        addUser("c", "123456", false);
     }
     public void setAuctions() {
-/*        Product p1 = new Product(
+        Product p1 = new Product(
                 "table",
                 "work table",
                 "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/XOZ56_Z_P_7290015745376_1.png",
@@ -49,10 +49,10 @@ public class Persist {
                 getUserByID(2)
         );
         Product p2 = new Product(
-                "table",
-                "work table",
-                "https://res.cloudinary.com/shufersal/image/upload/f_auto,q_auto/v1551800922/prod/product_images/products_zoom/XOZ56_Z_P_7290015745376_1.png",
-                100,
+                "laptop",
+                "laptop lenovo i7",
+                "https://d3m9l0v76dty0.cloudfront.net/system/photos/9004610/large/59d0009ba3756d732414efb5e7ff63e6.jpg",
+                200,
                 getUserByID(2)
         );
 
@@ -71,17 +71,6 @@ public class Persist {
         Offer o4 = new Offer(10, getUserByID(4), a2);
         Offer o5 = new Offer(12, getUserByID(3), a2);
         saveOffer(o1);saveOffer(o2);saveOffer(o3);saveOffer(o4);saveOffer(o5);
-
-        System.out.println(getOffersByAuctionID(1));
-        System.out.println("-----");*/
-/*        a.setIsOpen(false);
-        updateAuction(a);*/
-/*        Offer o6 = new Offer(122, getUserByID(3), getAuctionByProductID(1));
-        saveOffer(o6);*/
-        Auction a = getAuctionByProductID(1);
-        System.out.println(getMyOffers("5D96A0ED166A05B49DA80A031752FE80"));
-        System.out.println(a.getWinnerOffer(getOffersByAuctionID(1)));
-
 
     }
 
@@ -185,13 +174,10 @@ public class Persist {
         return user;
     }
 
-
-    public void addUser(String userName, String password) {
+    public void addUser(String userName, String password, boolean isAdmin) {
         if (!userNameExist(userName)) {
-            User userObject = new User();
-            userObject.setUsername(userName);
             String token = utils.createHash(userName, password);
-            userObject.setToken(token);
+            User userObject = new User(userName, token, isAdmin);
             saveUser(userObject);
         }
     }
@@ -270,21 +256,23 @@ public class Persist {
     }
     public Integer getNumberOfUsers(){
         Session session = sessionFactory.openSession();
-        Integer numOfUsers = session.createQuery("From User").list().size();
+        Integer numOfUsers = session.createQuery("From User where isAdmin = :admin")
+                .setParameter("admin", false)
+                .list().size();
         session.close();
         return numOfUsers;
     }
 
-    public int getNumberOfOffers(){
+    public Integer getNumberOfOffers(){
         Session session = sessionFactory.openSession();
-        int numOfOffers = session.createQuery("FROM Offer ").list().size();
+        Integer numOfOffers = session.createQuery("FROM Offer ").list().size();
         session.close();
         return numOfOffers;
     }
 
-    public int getNumberOfAuctions(){
+    public Integer getNumberOfAuctions(){
         Session session = sessionFactory.openSession();
-        int numOfAuctions = session.createQuery("FROM Auction").list().size();
+        Integer numOfAuctions = session.createQuery("FROM Auction").list().size();
         session.close();
         return numOfAuctions;
     }

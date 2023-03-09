@@ -1,12 +1,13 @@
 package com.dev.models;
 
+import lombok.Builder;
 import lombok.Data;
 
 
 @Data
+@Builder
 public class StatisticsModel {
-
-    private int numOfUsers;
-    private int numOfOffers;
-    private int numOfAuction;
+    private Integer numOfUsers;
+    private Integer numOfOffers;
+    private Integer numOfAuction;
 }
