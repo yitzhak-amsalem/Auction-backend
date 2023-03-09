@@ -262,4 +262,24 @@ public class Persist {
         transaction.commit();
         session.close();
     }
+    public Integer getNumberOfUsers(){
+        Session session = sessionFactory.openSession();
+        Integer numOfUsers = session.createQuery("From User").list().size();
+        session.close();
+        return numOfUsers;
+    }
+
+    public int getNumberOfOffers(){
+        Session session = sessionFactory.openSession();
+        int numOfOffers = session.createQuery("FROM Offer ").list().size();
+        session.close();
+        return numOfOffers;
+    }
+
+    public int getNumberOfAuctions(){
+        Session session = sessionFactory.openSession();
+        int numOfAuctions = session.createQuery("FROM Auction").list().size();
+        session.close();
+        return numOfAuctions;
+    }
 }
