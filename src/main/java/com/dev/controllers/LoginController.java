@@ -1,8 +1,10 @@
 package com.dev.controllers;
 
+import com.dev.models.StatisticsModel;
 import com.dev.objects.User;
 import com.dev.responses.BasicResponse;
 import com.dev.responses.LoginResponse;
+import com.dev.responses.StatisticsResponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,4 +100,18 @@ public class LoginController {
         basicResponse.setErrorCode(errorCode);
         return basicResponse;
     }
+    @RequestMapping (value = "get-statistics")
+    public StatisticsResponse getStatistics () {
+        StatisticsModel statisticsModel =new StatisticsModel();
+        StatisticsResponse statisticsResponse =new StatisticsResponse();
+        statisticsModel.setNumOfUsers(persist.getNumberOfUsers());
+        statisticsModel.setNumOfOffers(persist.getNumberOfOffers());
+        statisticsModel.setNumOfAuction(persist.getNumberOfAuctions());
+        statisticsResponse.setStatisticsModel(statisticsModel);
+        statisticsResponse.setSuccess(true);
+        statisticsResponse.setErrorCode(0);
+
+        return statisticsResponse;
+    }
+
 }
