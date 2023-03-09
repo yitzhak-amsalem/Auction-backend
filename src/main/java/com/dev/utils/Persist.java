@@ -146,19 +146,25 @@ public class Persist {
                         .credit(user.getCredit())
                         .username(user.getUsername())
                         .token(user.getToken())
-                        .sumOffers(getSumOffers(user.getToken()))
+                        .sumAuctions(getSumAuctions(user.getToken()))
                         .build())
                 .collect(Collectors.toList());
     }
 
-    public Integer getSumOffers(String token) {
+    public Integer getSumAuctions(String token) {
         Session session = sessionFactory.openSession();
-        Integer sumOffers = session.createQuery("From Offer WHERE offers.token = :token")
+        Integer sumAuctions = session.createQuery("From Auction WHERE productObj.owner.token = :token")
                 .setParameter("token", token)
                 .list().size();
-        System.out.println(sumOffers);
         session.close();
-        return sumOffers;
+        return sumAuctions;
+    }
+    public Integer getSumUsers() {
+        Session session = sessionFactory.openSession();
+        Integer sumUsers = session.createQuery("From User")
+                .list().size();
+        session.close();
+        return sumUsers;
     }
 
     public User getUserByToken (String token) {
