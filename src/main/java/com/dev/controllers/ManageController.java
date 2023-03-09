@@ -1,13 +1,9 @@
 package com.dev.controllers;
 
 
-import com.dev.models.MyOfferModel;
 import com.dev.models.UserForAdminModel;
 import com.dev.objects.User;
-import com.dev.responses.AllUsersResponse;
-import com.dev.responses.BasicResponse;
-import com.dev.responses.MyOffersResponse;
-import com.dev.responses.UserDetailsResponse;
+import com.dev.responses.*;
 import com.dev.utils.Persist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,16 +36,16 @@ public class ManageController {
         }
         return response;
     }
-    @RequestMapping (value = "update-user-credit", method = RequestMethod.GET)
-    public BasicResponse updateUserCredit (String AdminToken, String userToken, Double amount) {
+    @RequestMapping (value = "update-user-credit", method = RequestMethod.POST)
+    public BasicResponse updateUserCredit (String adminToken, String userToken, Double amount) {
         BasicResponse response;
-        User admin = persist.getUserByToken(AdminToken);
+        User admin = persist.getUserByToken(adminToken);
         if (admin != null){
             if (admin.isAdmin()){
                 User user = persist.getUserByToken(userToken);
                 if (user != null){
                     persist.updateUserCredit(user.getToken(), amount);
-                    response = new BasicResponse(true, null);
+                    response = new UpdateCreditResponse(true, null, amount);
                 } else {
                     response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
                 }
@@ -57,7 +53,7 @@ public class ManageController {
                 response = new BasicResponse(false, ERROR_NO_ADMIN);
             }
         } else {
-            response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
+            response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN_FOR_ADMIN);
         }
         return response;
     }

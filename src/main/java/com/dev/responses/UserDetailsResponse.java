@@ -13,6 +13,5 @@ public class UserDetailsResponse extends BasicResponse {
         this.credit = user.getCredit();
         this.username = user.getUsername();
         this.isAdmin = user.isAdmin();
-        System.out.println(isAdmin);
     }
 }
