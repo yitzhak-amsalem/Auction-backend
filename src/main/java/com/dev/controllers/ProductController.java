@@ -54,22 +54,26 @@ public class ProductController {
             Auction auction = persist.getAuctionByProductID(productID);
             if (auction != null){
                 if(auction.getIsOpen()){
-                    Optional<Integer> lastAmount = persist.getOffersByAuctionID(auction.getId()).stream()
-                            .filter(offer -> offer.getOffers().equals(user))
-                            .map(Offer::getAmount).max(Integer::compareTo);
-                    if (lastAmount.isPresent()){
-                        if (lastAmount.get() < (double)amount){
-                            credit = credit + lastAmount.get();
-                        } else {
-                            return new BasicResponse(false, ERROR_LESS_OFFER);
+                    if (amount >= auction.getProductObj().getPrice()){
+                        Optional<Integer> lastAmount = persist.getOffersByAuctionID(auction.getId()).stream()
+                                .filter(offer -> offer.getOffers().equals(user))
+                                .map(Offer::getAmount).max(Integer::compareTo);
+                        if (lastAmount.isPresent()){
+                            if (lastAmount.get() < (double)amount){
+                                credit = credit + lastAmount.get();
+                            } else {
+                                return new BasicResponse(false, ERROR_LESS_OFFER);
+                            }
                         }
-                    }
-                    credit = credit - amount;
-                    if ((credit - OFFER_COST >= 0)){
-                        persist.makeNewOffer(token, amount, auction, credit - OFFER_COST);
-                        response = new BasicResponse(true, null);
+                        credit = credit - amount;
+                        if ((credit - OFFER_COST >= 0)){
+                            persist.makeNewOffer(token, amount, auction, credit - OFFER_COST);
+                            response = new BasicResponse(true, null);
+                        } else {
+                            response = new BasicResponse(false, ERROR_NO_CREDIT);
+                        }
                     } else {
-                        response = new BasicResponse(false, ERROR_NO_CREDIT);
+                        response = new BasicResponse(false, ERROR_AMOUNT_LOWER_THAN_PRICE);
                     }
                 } else {
                     response = new BasicResponse(false, ERROR_AUCTION_CLOSED);
