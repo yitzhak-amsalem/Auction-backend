@@ -46,7 +46,7 @@ public class ProductController {
         return response;
     }
     @RequestMapping(value = "/make-an-offer", method = {RequestMethod.POST, RequestMethod.GET})
-    public BasicResponse makeOffer(String token, int amount, int productID) {
+    public BasicResponse makeOffer(String token, int amount, int productID) { //todo is admin
         BasicResponse response;
         User user = persist.getUserByToken(token);
         if (user != null){
@@ -95,6 +95,28 @@ public class ProductController {
         } else {
             response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
         }
+        return response;
+    }
+    @RequestMapping(value = "/make-an-offer", method = {RequestMethod.POST, RequestMethod.GET})
+    public BasicResponse closeAuction(String token, int productID) {
+        BasicResponse response;
+        User user = persist.getUserByToken(token);
+        if (user != null){
+            Auction auction = persist.getAuctionByProductID(productID);
+            if (auction != null){
+                boolean isOwner = persist.checkOwnerOfAuctionByUserID(user.getId(), productID);
+
+
+
+
+                response = new BasicResponse(true, ERROR_NO_SUCH_PRODUCT);
+            } else {
+                response = new BasicResponse(false, ERROR_NO_SUCH_PRODUCT);
+            }
+        } else {
+            response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
+        }
+
         return response;
     }
 }

@@ -2,6 +2,7 @@
 package com.dev.utils;
 
 
+import com.dev.models.AuctionModel;
 import com.dev.models.MyProductsModel;
 import com.dev.models.UserForAdminModel;
 import com.dev.objects.Product;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,6 +35,7 @@ public class Persist {
     public void initBasicDetails() {
         //setAdmin();
         //setAuctions();
+
     }
     public void setAdmin() {
         addUser("admin", "123456", true);
@@ -147,13 +150,6 @@ public class Persist {
                 .list().size();
         session.close();
         return sumAuctions;
-    }
-    public Integer getSumUsers() {
-        Session session = sessionFactory.openSession();
-        Integer sumUsers = session.createQuery("From User")
-                .list().size();
-        session.close();
-        return sumUsers;
     }
 
     public User getUserByToken (String token) {
@@ -275,5 +271,23 @@ public class Persist {
         Integer numOfAuctions = session.createQuery("FROM Auction").list().size();
         session.close();
         return numOfAuctions;
+    }
+
+    public List<Auction> getAllOpenAuctions() {
+        Session session = sessionFactory.openSession();
+        List<Auction> auctions = session.createQuery("FROM Auction where isOpen = :open")
+                .setParameter("open", true).list();
+        session.close();
+        return auctions;
+    }
+
+    public boolean checkOwnerOfAuctionByUserID(int ownerID, int productID) {
+        Session session = sessionFactory.openSession();
+        Product product = (Product)session.createQuery("FROM Product where owner.id = :ownerID and id = :productID")
+                .setParameter("ownerID", ownerID)
+                .setParameter("productID", productID).uniqueResult();
+        session.close();
+        return product != null;
+
     }
 }

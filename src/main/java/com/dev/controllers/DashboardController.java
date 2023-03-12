@@ -1,11 +1,13 @@
-/*
 package com.dev.controllers;
 
-import com.dev.objects.Message;
+import com.dev.models.AuctionModel;
+import com.dev.objects.Auction;
+import com.dev.objects.Offer;
 import com.dev.objects.User;
+import com.dev.responses.AllAuctionsResponse;
+import com.dev.responses.AuctionResponse;
 import com.dev.responses.BasicResponse;
-import com.dev.responses.MessagesResponse;
-import com.dev.responses.RecipientResponse;
+
 import com.dev.responses.UsernameResponse;
 import com.dev.utils.Persist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.dev.utils.Errors.ERROR_NO_SUCH_RECIPIENT;
+import static com.dev.utils.Errors.ERROR_NO_SUCH_PRODUCT;
 import static com.dev.utils.Errors.ERROR_NO_SUCH_TOKEN;
 
 @RestController
@@ -24,41 +26,27 @@ public class DashboardController {
 
     @Autowired
     private Persist persist;
+/*
     @Autowired
     private LiveUpdateController liveUpdatesController;
+*/
 
-    @RequestMapping (value = "get-username", method = RequestMethod.GET)
-    public BasicResponse getUsername (String token) {
-        User user = persist.getUserByToken(token);
-        BasicResponse basicResponse = null;
-        if (user != null) {
-            basicResponse = new UsernameResponse(true, null, user.getUsername());
-        } else {
-            basicResponse = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
-        }
-        return basicResponse;
-    }
-
-    @RequestMapping(value = "get-latest-messages", method = RequestMethod.GET)  // get X
-    public BasicResponse getLatestMessages (String token) {
-        List<Message> userMessages = persist.getMessagesByToken(token);
-        User user = persist.getUserByToken(token);
-        MessagesResponse messagesResponse = new MessagesResponse(userMessages, user.getId());
-        return messagesResponse;
-    }
-    @RequestMapping(value = "get-recipients", method = RequestMethod.GET)
-    public BasicResponse getRecipients (String token) {
-        BasicResponse basicResponse = null;
+    @RequestMapping(value = "get-all-auctions", method = RequestMethod.GET)
+    public BasicResponse getAllAuctions (String token) {
+        BasicResponse response;
         User user = persist.getUserByToken(token);
         if (user != null){
-            List<User> allUsers = persist.getAllUsers();
-            List<User> recipients = allUsers.stream().filter(recipient -> recipient.getId() != user.getId()).collect(Collectors.toList());
-            basicResponse = new RecipientResponse(recipients);
-            basicResponse.setSuccess(true);
+            List<Auction> auctions = persist.getAllOpenAuctions();
+            List<AuctionModel> allAuctions = auctions.stream()
+                    .map(auction -> {
+                        List<Offer> auctionOffers = persist.getOffersByAuctionID(auction.getId());
+                        return new AuctionModel(auction, auctionOffers, token);
+                    }).collect(Collectors.toList());
+            response = new AllAuctionsResponse(true, null, allAuctions);
         } else {
-            basicResponse = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
+            response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
         }
-        return basicResponse;
+        return response;
     }
 
 
@@ -66,7 +54,7 @@ public class DashboardController {
 
 
     // SSEvents
-    @RequestMapping(value = "send-message", method = RequestMethod.POST)
+/*    @RequestMapping(value = "send-message", method = RequestMethod.POST)
     public BasicResponse sendMessage (String token, int recipientID, String content) {
         BasicResponse basicResponse = null;
         User user = persist.getUserByToken(token);
@@ -97,6 +85,5 @@ public class DashboardController {
             basicResponse = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
         }
         return basicResponse;
-    }
+    }*/
 }
-*/
