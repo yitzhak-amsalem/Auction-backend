@@ -32,7 +32,10 @@ public class User {
         this.credit = isAdmin ? 0d : 1000d;
         this.isAdmin = isAdmin;
     }
-
+    public double roundAvoid(double value, int places) {
+        double scale = Math.pow(10.0, (double)places);
+        return (double)Math.round(value * scale) / scale;
+    }
     public User() {
 
     }

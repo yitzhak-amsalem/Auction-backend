@@ -44,7 +44,7 @@ public class ManageController {
             if (admin.isAdmin()){
                 User user = persist.getUserByToken(userToken);
                 if (user != null){
-                    persist.updateUserCredit(user.getToken(), amount);
+                    persist.updateUserCredit(user, amount);
                     response = new UpdateCreditResponse(true, null, amount);
                 } else {
                     response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
