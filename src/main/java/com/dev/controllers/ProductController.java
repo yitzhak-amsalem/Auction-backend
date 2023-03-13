@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.dev.utils.Constants.MIN_OFFERS_PER_AUCTION;
-import static com.dev.utils.Constants.OFFER_COST;
+import static com.dev.utils.Constants.*;
 import static com.dev.utils.Errors.*;
 
 @RestController
@@ -56,9 +56,8 @@ public class ProductController {
             if (auction != null){
                 if(auction.getIsOpen()){
                     if (amount >= auction.getProductObj().getPrice()){
-                        Optional<Integer> lastAmount = persist.getOffersByAuctionID(auction.getId()).stream()
-                                .filter(offer -> offer.getOffers().equals(user))
-                                .map(Offer::getAmount).max(Integer::compareTo);
+                        List<Offer> auctionOffers = persist.getOffersByAuctionID(auction.getId());
+                        Optional<Integer> lastAmount = this.lastOfferAmount(user, auctionOffers);
                         if (lastAmount.isPresent()){
                             if (lastAmount.get() < (double)amount){
                                 credit = credit + lastAmount.get();
@@ -68,7 +67,8 @@ public class ProductController {
                         }
                         credit = credit - amount;
                         if ((credit - OFFER_COST >= 0)){
-                            persist.makeNewOffer(token, amount, auction, credit - OFFER_COST);
+                            persist.makeNewOffer(user, amount, auction, credit - OFFER_COST);
+                            persist.payForSystem(OFFER_COST);
                             response = new BasicResponse(true, null);
                         } else {
                             response = new BasicResponse(false, ERROR_NO_CREDIT);
@@ -108,9 +108,10 @@ public class ProductController {
                 boolean isOwner = persist.checkOwnerOfAuctionByUserID(user.getId(), productID);
                 if (isOwner){
                     if (auction.getIsOpen()){
-                        Integer sumOffers = persist.getOffersByAuctionID(auction.getId()).size();
+                        int sumOffers = persist.getOffersByAuctionID(auction.getId()).size();
                         if (sumOffers >= MIN_OFFERS_PER_AUCTION){
                             persist.closeAuction(auction);
+                            updateCredits(user, auction);
                             response = new BasicResponse(true, null);
                         } else {
                             response = new BasicResponse(false, ERROR_LESS_THAN_OFFERS_THRESHOLD);
@@ -129,6 +130,32 @@ public class ProductController {
         }
 
         return response;
+    }
+
+    private void updateCredits(User user, Auction auction) {
+        List<Offer> auctionOffers = persist.getOffersByAuctionID(auction.getId());
+        Offer winOffer = auction.getWinnerOffer(auctionOffers);
+        int winOfferAmount = winOffer.getAmount();
+        double costForSystem = winOfferAmount * CLOSE_AUCTION_COST;
+        double newCredit = user.getCredit() + winOfferAmount - costForSystem;
+        persist.payForSystem(costForSystem); //1131
+        persist.updateUserCredit(user, newCredit);
+        List<User> usersForRefund = auctionOffers.stream()
+                .map(Offer::getOffers)
+                .filter(offers -> !offers.equals(winOffer.getOffers()))
+                .distinct().collect(Collectors.toList());
+        usersForRefund.forEach(user1 -> persist.updateUserCredit(user1, getRefundCredit(user1, auctionOffers)));
+    }
+
+    private Double getRefundCredit(User user, List<Offer> auctionOffers) {
+        Optional<Integer> lastAmount = this.lastOfferAmount(user, auctionOffers);
+        return user.getCredit() + lastAmount.get();
+    }
+
+    private Optional<Integer> lastOfferAmount(User user, List<Offer> auctionOffers){
+        return auctionOffers.stream()
+                .filter(offer -> offer.getOffers().equals(user))
+                .map(Offer::getAmount).max(Integer::compareTo);
     }
 }
 
