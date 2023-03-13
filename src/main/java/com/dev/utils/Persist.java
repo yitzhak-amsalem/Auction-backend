@@ -135,7 +135,7 @@ public class Persist {
         session.close();
         return allUsers.stream()
                 .map(user -> UserForAdminModel.builder()
-                        .credit(user.getCredit())
+                        .credit(user.roundAvoid(user.getCredit(), 2))
                         .username(user.getUsername())
                         .token(user.getToken())
                         .sumAuctions(getSumAuctions(user.getToken()))
@@ -231,20 +231,19 @@ public class Persist {
         return auction;
     }
 
-    public void makeNewOffer(String token, int amount, Auction auction, Double credit) {
+    public void makeNewOffer(User user, int amount, Auction auction, Double credit) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        Offer newOffer = new Offer(amount, getUserByToken(token), auction);
+        Offer newOffer = new Offer(amount, user, auction);
         saveOffer(newOffer);
-        updateUserCredit(token, credit);
+        updateUserCredit(user, credit);
         transaction.commit();
         session.close();
     }
 
-    public void updateUserCredit(String token, Double credit) {
+    public synchronized void updateUserCredit(User user, Double credit) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        User user = getUserByToken(token);
         user.setCredit(credit);
         session.saveOrUpdate(user);
         transaction.commit();
@@ -288,6 +287,32 @@ public class Persist {
                 .setParameter("productID", productID).uniqueResult();
         session.close();
         return product != null;
+    }
 
+    public void closeAuction(Auction auction) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        auction.setIsOpen(false);
+        session.saveOrUpdate(auction);
+        transaction.commit();
+        session.close();
+    }
+
+    public synchronized void payForSystem(double pay) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        User admin = getAdmin();
+        admin.setCredit(admin.getCredit() + pay);
+        session.saveOrUpdate(admin);
+        transaction.commit();
+        session.close();
+    }
+
+    private User getAdmin() {
+        Session session = sessionFactory.openSession();
+        User admin = (User) session.createQuery("FROM User WHERE isAdmin = :isAdmin")
+                .setParameter("isAdmin", true).uniqueResult();
+        session.close();
+        return admin;
     }
 }
