@@ -97,7 +97,7 @@ public class ProductController {
         }
         return response;
     }
-    @RequestMapping(value = "/make-an-offer", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/close-auction", method = {RequestMethod.POST, RequestMethod.GET})
     public BasicResponse closeAuction(String token, int productID) {
         BasicResponse response;
         User user = persist.getUserByToken(token);
