@@ -288,6 +288,14 @@ public class Persist {
                 .setParameter("productID", productID).uniqueResult();
         session.close();
         return product != null;
+    }
 
+    public void closeAuction(Auction auction) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        auction.setIsOpen(false);
+        session.saveOrUpdate(auction);
+        transaction.commit();
+        session.close();
     }
 }

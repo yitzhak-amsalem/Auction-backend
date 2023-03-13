@@ -14,5 +14,9 @@ public class Errors {
     public static final int ERROR_NO_ADMIN = 1010;
     public static final int ERROR_NO_SUCH_TOKEN_FOR_ADMIN = 1011;
     public static final int ERROR_AMOUNT_LOWER_THAN_PRICE = 1012;
+    public static final int ERROR_NOT_OWNER = 1013;
+    public static final int ERROR_AUCTION_ALREADY_CLOSED = 1014;
+    public static final int ERROR_LESS_THAN_OFFERS_THRESHOLD = 1015;
+
 
 }

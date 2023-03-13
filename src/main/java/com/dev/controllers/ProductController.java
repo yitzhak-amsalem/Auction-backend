@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 
+import static com.dev.utils.Constants.MIN_OFFERS_PER_AUCTION;
 import static com.dev.utils.Constants.OFFER_COST;
 import static com.dev.utils.Errors.*;
 
@@ -105,11 +106,21 @@ public class ProductController {
             Auction auction = persist.getAuctionByProductID(productID);
             if (auction != null){
                 boolean isOwner = persist.checkOwnerOfAuctionByUserID(user.getId(), productID);
-
-
-
-
-                response = new BasicResponse(true, ERROR_NO_SUCH_PRODUCT);
+                if (isOwner){
+                    if (auction.getIsOpen()){
+                        Integer sumOffers = persist.getOffersByAuctionID(auction.getId()).size();
+                        if (sumOffers >= MIN_OFFERS_PER_AUCTION){
+                            persist.closeAuction(auction);
+                            response = new BasicResponse(true, null);
+                        } else {
+                            response = new BasicResponse(false, ERROR_LESS_THAN_OFFERS_THRESHOLD);
+                        }
+                    } else {
+                        response = new BasicResponse(false, ERROR_AUCTION_ALREADY_CLOSED);
+                    }
+                } else {
+                    response = new BasicResponse(false, ERROR_NOT_OWNER);
+                }
             } else {
                 response = new BasicResponse(false, ERROR_NO_SUCH_PRODUCT);
             }
