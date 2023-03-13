@@ -302,9 +302,7 @@ public class Persist {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         User admin = getAdmin();
-        System.out.println("admin b: " + admin.getCredit());
         admin.setCredit(admin.getCredit() + pay);
-        System.out.println("admin aft: " + admin.getCredit());
         session.saveOrUpdate(admin);
         transaction.commit();
         session.close();
