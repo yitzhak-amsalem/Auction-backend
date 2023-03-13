@@ -33,7 +33,7 @@ public class Persist {
         this.sessionFactory = sf;
     }
     public void initBasicDetails() {
-        //setAdmin();
+        setAdmin();
         //setAuctions();
 
     }
