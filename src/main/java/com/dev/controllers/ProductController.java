@@ -57,7 +57,7 @@ public class ProductController {
                 if(auction.getIsOpen()){
                     if (amount >= auction.getProductObj().getPrice()){
                         List<Offer> auctionOffers = persist.getOffersByAuctionID(auction.getId());
-                        Optional<Integer> lastAmount = this.lastOfferAmount(user, auctionOffers);
+                        Optional<Integer> lastAmount = persist.lastOfferAmount(user, auctionOffers);
                         if (lastAmount.isPresent()){
                             if (lastAmount.get() < (double)amount){
                                 credit = credit + lastAmount.get();
@@ -111,7 +111,7 @@ public class ProductController {
                         int sumOffers = persist.getOffersByAuctionID(auction.getId()).size();
                         if (sumOffers >= MIN_OFFERS_PER_AUCTION){
                             persist.closeAuction(auction);
-                            updateCredits(user, auction);
+                            persist.updateCredits(user, auction);
                             response = new BasicResponse(true, null);
                         } else {
                             response = new BasicResponse(false, ERROR_LESS_THAN_OFFERS_THRESHOLD);
@@ -132,31 +132,7 @@ public class ProductController {
         return response;
     }
 
-    private void updateCredits(User user, Auction auction) {
-        List<Offer> auctionOffers = persist.getOffersByAuctionID(auction.getId());
-        Offer winOffer = auction.getWinnerOffer(auctionOffers);
-        int winOfferAmount = winOffer.getAmount();
-        double costForSystem = winOfferAmount * CLOSE_AUCTION_COST;
-        double newCredit = user.getCredit() + winOfferAmount - costForSystem;
-        persist.payForSystem(costForSystem); //1131
-        persist.updateUserCredit(user, newCredit);
-        List<User> usersForRefund = auctionOffers.stream()
-                .map(Offer::getOffers)
-                .filter(offers -> !offers.equals(winOffer.getOffers()))
-                .distinct().collect(Collectors.toList());
-        usersForRefund.forEach(user1 -> persist.updateUserCredit(user1, getRefundCredit(user1, auctionOffers)));
-    }
 
-    private Double getRefundCredit(User user, List<Offer> auctionOffers) {
-        Optional<Integer> lastAmount = this.lastOfferAmount(user, auctionOffers);
-        return user.getCredit() + lastAmount.get();
-    }
-
-    private Optional<Integer> lastOfferAmount(User user, List<Offer> auctionOffers){
-        return auctionOffers.stream()
-                .filter(offer -> offer.getOffers().equals(user))
-                .map(Offer::getAmount).max(Integer::compareTo);
-    }
 }
 
 

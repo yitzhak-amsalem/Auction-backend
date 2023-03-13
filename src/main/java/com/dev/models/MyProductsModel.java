@@ -16,7 +16,8 @@ public class MyProductsModel {
     public MyProductsModel(Auction auction, List<Offer> offers) {
         this.productID = auction.getProductObj().getId();
         this.productName = auction.getProductObj().getName();
-        this.maxAmount = auction.getWinnerOffer(offers).getAmount();
+        Offer maxOffer = auction.getWinnerOffer(offers);
+        this.maxAmount = (maxOffer == null) ? null : maxOffer.getAmount();
         this.isOpen = auction.getIsOpen();
     }
 }

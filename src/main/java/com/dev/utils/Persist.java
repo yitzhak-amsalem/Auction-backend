@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.dev.utils.Constants.ADD_AUCTION_COST;
+import static com.dev.utils.Constants.CLOSE_AUCTION_COST;
+
 @Component
 public class Persist {
 
@@ -103,13 +106,7 @@ public class Persist {
         session.save(auction);
         session.close();
     }
-    public void updateAuction (Auction auction) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        session.saveOrUpdate(auction);
-        transaction.commit();
-        session.close();
-    }
+
     public void saveOffer (Offer offer) {
         Session session = sessionFactory.openSession();
         session.save(offer);
@@ -314,5 +311,41 @@ public class Persist {
                 .setParameter("isAdmin", true).uniqueResult();
         session.close();
         return admin;
+    }
+
+    public void updateCreditsForNewAuction(User user) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        double newCredit = user.getCredit() - ADD_AUCTION_COST;
+        payForSystem(ADD_AUCTION_COST);
+        updateUserCredit(user, newCredit);
+        transaction.commit();
+        session.close();
+    }
+
+    public void updateCredits(User user, Auction auction) {
+        List<Offer> auctionOffers = getOffersByAuctionID(auction.getId());
+        Offer winOffer = auction.getWinnerOffer(auctionOffers);
+        int winOfferAmount = winOffer.getAmount();
+        double costForSystem = winOfferAmount * CLOSE_AUCTION_COST;
+        double newCredit = user.getCredit() + winOfferAmount - costForSystem;
+        payForSystem(costForSystem);
+        updateUserCredit(user, newCredit);
+        List<User> usersForRefund = auctionOffers.stream()
+                .map(Offer::getOffers)
+                .filter(offers -> !offers.equals(winOffer.getOffers()))
+                .distinct().collect(Collectors.toList());
+        usersForRefund.forEach(user1 -> updateUserCredit(user1, getRefundCredit(user1, auctionOffers)));
+    }
+
+    private Double getRefundCredit(User user, List<Offer> auctionOffers) {
+        Optional<Integer> lastAmount = this.lastOfferAmount(user, auctionOffers);
+        return user.getCredit() + lastAmount.get();
+    }
+
+    public Optional<Integer> lastOfferAmount(User user, List<Offer> auctionOffers){
+        return auctionOffers.stream()
+                .filter(offer -> offer.getOffers().equals(user))
+                .map(Offer::getAmount).max(Integer::compareTo);
     }
 }

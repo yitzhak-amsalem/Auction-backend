@@ -17,6 +17,7 @@ public class Errors {
     public static final int ERROR_NOT_OWNER = 1013;
     public static final int ERROR_AUCTION_ALREADY_CLOSED = 1014;
     public static final int ERROR_LESS_THAN_OFFERS_THRESHOLD = 1015;
+    public static final int ERROR_NEGATIVE_PRICE = 1016;
 
 
 }

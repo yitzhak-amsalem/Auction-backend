@@ -35,7 +35,8 @@ public class Auction {
 
     }
     public Offer getWinnerOffer(List<Offer> offers) {
-        return offers.stream().max(Offer::compareTo).get();
+        Optional<Offer> maxOffer = offers.stream().max(Offer::compareTo);
+        return maxOffer.orElse(null);
     }
 
 /*    public Offer getWinnerOffer(Persist persist) {
