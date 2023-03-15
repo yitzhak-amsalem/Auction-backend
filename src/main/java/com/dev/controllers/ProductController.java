@@ -92,46 +92,6 @@ public class ProductController {
         }
         return response;
     }
-/*    @RequestMapping(value = "/close-auction1", method = {RequestMethod.POST, RequestMethod.GET})
-    public BasicResponse closeAuction1(String token, int productID) {
-        return Optional.ofNullable(persist.getUserByToken(token))
-                .map(user -> closeAuctionOfUser(user, productID))
-                .orElse(new BasicResponse(false, ERROR_NO_SUCH_TOKEN));
-    }
-    private BasicResponse closeAuctionOfUser(User user, int productID) {
-        if (user.isAdmin()) {
-            return new BasicResponse(false, ERROR_ADMIN_NOT_RELEVANT);
-        }
-        return closeAuctionOfNonAdmin(user, productID);
-    }
-    private BasicResponse closeAuctionOfNonAdmin(User user, int productID) {
-        Auction auction = persist.getAuctionByProductID(productID);
-        return Optional.ofNullable(auction)
-                .map(auction1 -> closeAuctionOfNonAdmin(user, productID, auction1))
-                .orElse(new BasicResponse(false, ERROR_NO_SUCH_PRODUCT));
-    }
-    private BasicResponse closeAuctionOfNonAdmin(User user, int productID, Auction auction) {
-        boolean isOwner = persist.checkOwnerOfAuctionByUserID(user.getId(), productID);
-        if (isOwner) {
-            return closeAuctionOfOwner(user, auction);
-        }
-        return new BasicResponse(false, ERROR_NOT_OWNER);
-    }
-    private BasicResponse closeAuctionOfOwner(User user, Auction auction) {
-        if (auction.getIsOpen()){
-            return closeOpenedAuctionOfOwner(user, auction);
-        }
-        return new BasicResponse(false, ERROR_AUCTION_ALREADY_CLOSED);
-    }
-    private BasicResponse closeOpenedAuctionOfOwner(User user, Auction auction) {
-        int sumOffers = persist.getOffersByAuctionID(auction.getId()).size();
-        if (sumOffers >= MIN_OFFERS_PER_AUCTION){
-            persist.closeAuction(auction);
-            persist.updateCredits(user, auction);
-            return new BasicResponse(true, null);
-        }
-        return new BasicResponse(false, ERROR_LESS_THAN_OFFERS_THRESHOLD);
-    }*/
     @RequestMapping(value = "/close-auction", method = {RequestMethod.POST, RequestMethod.GET})
     public BasicResponse closeAuction(String token, int productID) {
         BasicResponse response;
@@ -169,8 +129,6 @@ public class ProductController {
         }
         return response;
     }
-
-
 }
 
 
