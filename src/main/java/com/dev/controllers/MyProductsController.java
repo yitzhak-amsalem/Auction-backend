@@ -32,8 +32,12 @@ public class MyProductsController {
         BasicResponse response;
         User user = persist.getUserByToken(token);
         if (user != null){
-            List<MyProductsModel> myProducts = persist.getMyProducts(token);
-            response = new MyProductsResponse(true, null, myProducts);
+            if (!user.isAdmin()) {
+                List<MyProductsModel> myProducts = persist.getMyProducts(token);
+                response = new MyProductsResponse(true, null, myProducts);
+            } else {
+                response = new BasicResponse(false, ERROR_ADMIN_NOT_RELEVANT);
+            }
         } else {
             response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
         }
@@ -44,14 +48,22 @@ public class MyProductsController {
         BasicResponse response;
         User user = persist.getUserByToken(token);
         if (user != null){
-            if (price >= 0){
-                Product product = new Product(productName, description, imageLink, price, user);
-                Auction newAuction = new Auction(product);
-                persist.saveAuction(newAuction);
-                persist.updateCreditsForNewAuction(user);
-                response = new BasicResponse(true, null);
+            if (!user.isAdmin()) {
+                if (user.getCredit() >= ADD_AUCTION_COST) {
+                    if (price >= 0){
+                        Product product = new Product(productName, description, imageLink, price, user);
+                        Auction newAuction = new Auction(product);
+                        persist.saveAuction(newAuction);
+                        persist.updateCreditsForNewAuction(user);
+                        response = new BasicResponse(true, null);
+                    } else {
+                        response = new BasicResponse(false, ERROR_NEGATIVE_PRICE);
+                    }
+                } else {
+                    response = new BasicResponse(false, ERROR_NO_CREDIT);
+                }
             } else {
-                response = new BasicResponse(false, ERROR_NEGATIVE_PRICE);
+                response = new BasicResponse(false, ERROR_ADMIN_NOT_RELEVANT);
             }
         } else {
             response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);

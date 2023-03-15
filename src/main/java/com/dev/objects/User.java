@@ -33,7 +33,7 @@ public class User {
         this.isAdmin = isAdmin;
     }
     public double roundAvoid(double value, int places) {
-        double scale = Math.pow(10.0, (double)places);
+        double scale = Math.pow(10.0, places);
         return (double)Math.round(value * scale) / scale;
     }
     public User() {

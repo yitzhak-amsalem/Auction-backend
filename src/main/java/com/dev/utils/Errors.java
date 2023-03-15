@@ -18,6 +18,8 @@ public class Errors {
     public static final int ERROR_AUCTION_ALREADY_CLOSED = 1014;
     public static final int ERROR_LESS_THAN_OFFERS_THRESHOLD = 1015;
     public static final int ERROR_NEGATIVE_PRICE = 1016;
+    public static final int ERROR_ADMIN_CAN_NOT_OFFER = 1017;
+    public static final int ERROR_ADMIN_NOT_RELEVANT = 1018;
 
 
 }

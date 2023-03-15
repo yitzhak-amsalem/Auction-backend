@@ -14,8 +14,4 @@ public class UserDetailsResponse extends BasicResponse {
         this.username = user.getUsername();
         this.isAdmin = user.isAdmin();
     }
-    public double roundAvoid(double value, int places) {
-        double scale = Math.pow(10.0, (double)places);
-        return (double)Math.round(value * scale) / scale;
-    }
 }

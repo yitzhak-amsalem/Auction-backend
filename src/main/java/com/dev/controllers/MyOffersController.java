@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.dev.utils.Errors.ERROR_ADMIN_NOT_RELEVANT;
 import static com.dev.utils.Errors.ERROR_NO_SUCH_TOKEN;
 
 @RestController
@@ -25,12 +26,15 @@ public class MyOffersController {
         BasicResponse response;
         User user = persist.getUserByToken(token);
         if (user != null){
-            List<MyOfferModel> myOffers = persist.getMyOffers(token);
-            response = new MyOffersResponse(true, null, myOffers);
+            if (!user.isAdmin()) {
+                List<MyOfferModel> myOffers = persist.getMyOffers(token);
+                response = new MyOffersResponse(true, null, myOffers);
+            } else {
+                response = new BasicResponse(false, ERROR_ADMIN_NOT_RELEVANT);
+            }
         } else {
             response = new BasicResponse(false, ERROR_NO_SUCH_TOKEN);
         }
         return response;
-
     }
 }

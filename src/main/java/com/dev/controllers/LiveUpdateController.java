@@ -1,10 +1,9 @@
-/*
 package com.dev.controllers;
 
 import com.dev.models.EventModel;
-import com.dev.models.MessageModel;
-import com.dev.objects.Message;
+import com.dev.objects.Offer;
 import com.dev.objects.User;
+import com.dev.responses.BasicResponse;
 import com.dev.utils.Persist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,68 +11,71 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.dev.utils.Constants.*;
+import static com.dev.utils.Errors.ERROR_NO_SUCH_PRODUCT;
 
 
 @Controller
 public class LiveUpdateController {
 
-    private HashMap<String, SseEmitter> emitterMap = new HashMap<>();
+    private final HashMap<String, SseEmitter> emitterMap = new HashMap<>();
     @Autowired
     private Persist persist;
 
     @RequestMapping(value = "/sse-handler", method = RequestMethod.GET)
-    public SseEmitter handle(String token, int recipientID){
+    public SseEmitter handle(String token){
         User user = persist.getUserByToken(token);
         SseEmitter sseEmitter = null;
         if (user != null){
-            System.out.println(recipientID);
-            String key = createKey(user.getId(), recipientID);
-            sseEmitter = this.emitterMap.get(key);
+            sseEmitter = this.emitterMap.get(token);
             if (sseEmitter == null){
                 sseEmitter = new SseEmitter(30L * MINUTE);
-                System.out.println(key);
-                this.emitterMap.put(key, sseEmitter);
+                this.emitterMap.put(token, sseEmitter);
             }
         }
-        System.out.println(sseEmitter);
         return sseEmitter;
     }
 
-    private String createKey(int senderID, int recipientID){
-        return (senderID + "_" + recipientID);
+    public void sendCloseAuction(List<Offer> offers) {
+        List<String> offersTokens = offers.stream()
+                .map(offer -> offer.getOffers().getToken())
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<SseEmitter> emitters = offersTokens.stream()
+                .map(this.emitterMap::get)
+                .collect(Collectors.toList());
+
+        emitters.forEach(emitter -> {
+                Optional.ofNullable(emitter)
+                        .ifPresent(sseEmitter -> {
+                            try {
+                                sseEmitter.send(CLOSE_AUCTION);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+            /*if (emitter != null) {
+                try {
+                    emitter.send(CLOSE_AUCTION);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }*/
+        });
     }
 
-    public void sendStartTypingEvent(int senderId, int recipientId) {
-        String key = createKey(recipientId, senderId);
-*/
-/*        System.out.println(this.senderKey);
-        System.out.println(this.recipientKey);
-        System.out.println(this.senderKey.equals(this.recipientKey));*//*
-
-        SseEmitter conversationEmitter = this.emitterMap.get(key);
-        System.out.println(conversationEmitter);
-        if (conversationEmitter != null) {
-            //User sender = persist.getUserByID(senderId);
-            //EventModel event = new EventModel(sender, EVENT_TYPING);
+    public void sendNewOffer (String ownerToken) {
+        SseEmitter newOfferEmitter = this.emitterMap.get(ownerToken);
+        if (newOfferEmitter != null) {
             try {
-                conversationEmitter.send(senderId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void sendConversationMessage (int senderId, int recipientId, Message message) {
-        String key = createKey(recipientId, senderId);
-        SseEmitter conversationEmitter = this.emitterMap.get(key);
-        if (conversationEmitter != null) {
-            //User sender = persist.getUserByID(senderId);
-            MessageModel messageModel = new MessageModel(message, recipientId);
-            try {
-                conversationEmitter.send(messageModel);
+                newOfferEmitter.send(NEW_OFFER);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -81,4 +83,3 @@ public class LiveUpdateController {
     }
 
 }
-*/

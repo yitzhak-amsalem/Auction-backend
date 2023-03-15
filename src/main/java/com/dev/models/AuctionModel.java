@@ -21,8 +21,9 @@ public class AuctionModel {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         this.openingDate = simpleDateFormat.format(auction.getOpeningDate());
         this.productObj = new ProductModel(auction.getProductObj());
-        this.myOffers = offers.stream().filter(offer -> offer.getOffers().getToken().equals(token))
-                .map(offer -> new OfferModel(offer))
+        this.myOffers = offers.stream()
+                .filter(offer -> offer.getOffers().getToken().equals(token))
+                .map(OfferModel::new)
                 .collect(Collectors.toList());
         this.sumOffers = offers.size();
     }
