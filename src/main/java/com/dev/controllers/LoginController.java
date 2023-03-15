@@ -8,7 +8,6 @@ import com.dev.responses.StatisticsResponse;
 import com.dev.responses.UserDetailsResponse;
 import com.dev.utils.Persist;
 import com.dev.utils.Utils;
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +22,7 @@ public class LoginController {
     @Autowired
     private Persist persist;
 
-    @RequestMapping(value = "sign-up")
+    @RequestMapping(value = "sign-up", method = RequestMethod.POST)
     public BasicResponse signUp (String username, String password) {
         BasicResponse response;
         if (username != null) {
@@ -31,7 +30,7 @@ public class LoginController {
                 if (utils.isStrongPassword(password)) {
                     User fromDb = persist.getUserByUsername(username);
                     if (fromDb == null) {
-                        persist.addUser(username, utils.createHash(username, password), false);
+                        persist.addUser(username, password, false);
                         response = new BasicResponse(true, null);
                     } else {
                         response = new BasicResponse(false, ERROR_USERNAME_ALREADY_EXISTS);
@@ -48,13 +47,13 @@ public class LoginController {
         return response;
     }
 
-    @RequestMapping (value = "login")
+    @RequestMapping (value = "login", method = RequestMethod.POST)
     public BasicResponse login (String username, String password) {
         BasicResponse response;
         if (username != null) {
             if (password != null) {
                 String token = utils.createHash(username, password);
-                User user = persist.getUserByUsernameAndToken(username, token);
+                User user = persist.getUserByToken(token);
                 if (user != null && !user.isAdmin()) {
                     response = new LoginResponse(true, null, token);
                 } else {
@@ -74,7 +73,7 @@ public class LoginController {
         if (username != null) {
             if (password != null) {
                 String token = utils.createHash(username, password);
-                User admin = persist.getUserByUsernameAndToken(username, token);
+                User admin = persist.getUserByToken(token);
                 if (admin != null && admin.isAdmin()) {
                     response = new LoginResponse(true, null, token);
                 } else {
@@ -88,7 +87,7 @@ public class LoginController {
         }
         return response;
     }
-    @RequestMapping (value = "get-statistics")
+    @RequestMapping (value = "get-statistics", method = RequestMethod.GET)
     public BasicResponse getStatistics () { //todo errors?
         StatisticsModel statisticsModel = StatisticsModel.builder()
                 .numOfAuction(persist.getNumberOfAuctions())

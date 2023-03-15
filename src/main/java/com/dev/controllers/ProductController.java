@@ -92,7 +92,7 @@ public class ProductController {
         }
         return response;
     }
-    @RequestMapping(value = "/close-auction1", method = {RequestMethod.POST, RequestMethod.GET})
+/*    @RequestMapping(value = "/close-auction1", method = {RequestMethod.POST, RequestMethod.GET})
     public BasicResponse closeAuction1(String token, int productID) {
         return Optional.ofNullable(persist.getUserByToken(token))
                 .map(user -> closeAuctionOfUser(user, productID))
@@ -131,7 +131,7 @@ public class ProductController {
             return new BasicResponse(true, null);
         }
         return new BasicResponse(false, ERROR_LESS_THAN_OFFERS_THRESHOLD);
-    }
+    }*/
     @RequestMapping(value = "/close-auction", method = {RequestMethod.POST, RequestMethod.GET})
     public BasicResponse closeAuction(String token, int productID) {
         BasicResponse response;

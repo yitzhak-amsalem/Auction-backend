@@ -1,9 +1,7 @@
 package com.dev.controllers;
 
-import com.dev.models.EventModel;
 import com.dev.objects.Offer;
 import com.dev.objects.User;
-import com.dev.responses.BasicResponse;
 import com.dev.utils.Persist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,19 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dev.utils.Constants.*;
-import static com.dev.utils.Errors.ERROR_NO_SUCH_PRODUCT;
-
 
 @Controller
 public class LiveUpdateController {
-
     private final HashMap<String, SseEmitter> emitterMap = new HashMap<>();
     @Autowired
     private Persist persist;
@@ -35,7 +28,7 @@ public class LiveUpdateController {
         if (user != null){
             sseEmitter = this.emitterMap.get(token);
             if (sseEmitter == null){
-                sseEmitter = new SseEmitter(30L * MINUTE);
+                sseEmitter = new SseEmitter(60L * MINUTE);
                 this.emitterMap.put(token, sseEmitter);
             }
         }
@@ -53,21 +46,15 @@ public class LiveUpdateController {
                 .collect(Collectors.toList());
 
         emitters.forEach(emitter -> {
-                Optional.ofNullable(emitter)
-                        .ifPresent(sseEmitter -> {
-                            try {
-                                sseEmitter.send(CLOSE_AUCTION);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-            /*if (emitter != null) {
+            if (emitter != null) {
                 try {
                     emitter.send(CLOSE_AUCTION);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }*/
+            } else {
+                System.out.println("i am null");
+            }
         });
     }
 
