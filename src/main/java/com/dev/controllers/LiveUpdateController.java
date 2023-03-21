@@ -52,8 +52,6 @@ public class LiveUpdateController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else {
-                System.out.println("i am null");
             }
         });
     }
