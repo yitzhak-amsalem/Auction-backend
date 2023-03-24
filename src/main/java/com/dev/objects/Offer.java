@@ -42,7 +42,7 @@ public class Offer implements Comparable<Offer>{
         @Override
         public int compareTo(Offer o) {
                 return ((o.getAmount()) - (this.getAmount()) != 0) ?
-                        (this.getAmount()).compareTo(o.getAmount()) //todo
+                        (this.getAmount()).compareTo(o.getAmount())
                         :
                         o.getDate().compareTo(this.getDate());
         }

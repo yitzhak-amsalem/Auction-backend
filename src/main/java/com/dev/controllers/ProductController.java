@@ -47,7 +47,7 @@ public class ProductController {
         return response;
     }
     @RequestMapping(value = "/make-an-offer", method = {RequestMethod.POST, RequestMethod.GET})
-    public BasicResponse makeOffer(String token, int amount, int productID) { //todo is admin
+    public BasicResponse makeOffer(String token, int amount, int productID) {
         BasicResponse response;
         User user = persist.getUserByToken(token);
         if (user != null){

@@ -88,7 +88,7 @@ public class LoginController {
         return response;
     }
     @RequestMapping (value = "get-statistics", method = RequestMethod.GET)
-    public BasicResponse getStatistics () { //todo errors?
+    public BasicResponse getStatistics () {
         StatisticsModel statisticsModel = StatisticsModel.builder()
                 .numOfAuction(persist.getNumberOfAuctions())
                 .numOfOffers(persist.getNumberOfOffers())
